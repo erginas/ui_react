@@ -2,8 +2,8 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-const UserRoutes = lazy(() => import('@/modules/User/router'));
-const ProductRoutes = lazy(() => import('@/modules/Product/router'));
+const UserRoutes = lazy(() => import('@/modules/ex/User/router'));
+const ProductRoutes = lazy(() => import('@/modules/ex/Product/router'));
 
 export const AppRouter: React.FC = () => (
   <BrowserRouter>
