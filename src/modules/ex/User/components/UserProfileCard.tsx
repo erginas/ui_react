@@ -1,7 +1,7 @@
 // src/modules/User/components/UserProfileCard.tsx
 import React from 'react';
 import { User } from '../types';
-import { Card } from '@/common/components/Card';
+import { Card } from '../../../../common/components/ui/Card.tsx';
 
 interface Props {
   user: User;
