@@ -1,7 +1,7 @@
 // src/modules/User/pages/Dashboard.tsx
 import React from 'react';
-import { UserProfileCard } from '../components/UserProfileCard';
-import { User } from '../types';
+import { UserProfileCard } from '../components/UserProfileCard.tsx';
+import { User } from '../types.ts';
 
 const mockUser: User = { id: '1', name: 'Örnek Kullanıcı', email: 'user@example.com' };
 

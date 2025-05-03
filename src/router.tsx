@@ -3,12 +3,12 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // Layouts
-const UserLayout = lazy(() => import('../src/modules/ex/User/UserLayout'));
+const UserLayout = lazy(() => import('../src/modules/User/UserLayout'));
 const ProductLayout = lazy(() => import('../src/modules/ex/Product/ProductLayout'));
 
 // Pages for nested routes
-const UserDashboard = lazy(() => import('../src/modules/ex/User/pages/Dashboard'));
-const UserSettings  = lazy(() => import('../src/modules/ex/User/pages/Settings'));
+const UserDashboard = lazy(() => import('../src/modules/User/pages/Dashboard'));
+const UserSettings  = lazy(() => import('../src/modules/User/pages/Settings'));
 const ProductDashboard = lazy(() => import('../src/modules/ex/Product/pages/Dashboard'));
 const ProductInventory = lazy(() => import('../src/modules/ex/Product/pages/Inventory'));
 

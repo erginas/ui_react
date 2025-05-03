@@ -1,37 +1,59 @@
 // src/common/components/Layout.tsx
-import React, { useState } from 'react';
-import { SidebarMenu } from './SidebarMenu';
+import React, { ReactNode, useState } from 'react';
 import { Menu as MenuIcon, X as CloseIcon } from 'lucide-react';
+import { SidebarMenu } from './SidebarMenu';
+import { useTheme } from '../../../theme';
 
-export const Sidebar: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-  const [open, setOpen] = useState(false);
+interface LayoutProps {
+  title: string;
+  children: ReactNode;
+}
+
+export const Layout: React.FC<LayoutProps> = ({ title, children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { colors } = useTheme();
+
   return (
-    <div className="flex">
-      {/* Burger Butonu */}
-      <button
-        onClick={() => setOpen(prev => !prev)}
-        className="md:hidden p-2 m-2 rounded-md bg-gray-100"
-      >
-        {open ? <CloseIcon size={24} /> : <MenuIcon size={24} />}
-      </button>
+    <div className="relative flex flex-col min-h-screen">
+      {/* Topbar - Tam genişlikte, kesinlikle sabit */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-white border-b shadow-sm flex items-center justify-between px-6">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-1 rounded hover:bg-gray-100 transition-colors"
+          >
+            {sidebarOpen ? <CloseIcon size={20} /> : <MenuIcon size={20} />}
+          </button>
+          <h1 className="text-xl font-semibold">{title}</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <img src="/assets/logo.png" alt="Logo" className="h-8" />
+          <span className="text-sm text-gray-600">
+            {import.meta.env.VITE_COMPANY_NAME || 'Tıpsan Tıbbı Aletler A.Ş.'}
+          </span>
+        </div>
+      </header>
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed top-0 left-0 h-full bg-white border-r p-4 transform transition-transform
-          ${open ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:flex md:w-64`}
-      >
-        <SidebarMenu />
-      </aside>
+      {/* Ana İçerik Alanı - Topbar'ın altından başlayacak */}
+      <div className="flex flex-1 overflow-hidden mt-16"> {/* mt-16 = h-16 (topbar yüksekliği) */}
+        {/* Sidebar */}
+        <aside
+          className={`bg-white border-r transition-all duration-300 ease-in-out ${
+            sidebarOpen ? 'w-64' : 'w-0'
+          } overflow-y-auto`}
+          style={{ backgroundColor: colors.surface }}
+        >
+          {sidebarOpen && <SidebarMenu />}
+        </aside>
 
-      {/* Ana İçerik */}
-      <div className="flex-1 ml-0 md:ml-64">
-        {children}
+        {/* Main Content */}
+        <main
+          className="flex-1 overflow-auto p-6 bg-gray-50"
+          style={{ backgroundColor: colors.background }}
+        >
+          {children}
+        </main>
       </div>
     </div>
   );
 };
-export const Topbar: React.FC<{ title: string }> = ({ title }) => (
-  <header className="h-16 flex items-center px-6 bg-white border-b">
-    <h1 className="text-lg font-semibold">{title}</h1>
-  </header>
-);
