@@ -1,15 +1,21 @@
 // src/modules/User/pages/Dashboard.tsx
 import React from 'react';
-import { UserProfileCard } from '../components/UserProfileCard.tsx';
-import { User } from '../types.ts';
+import {useUsers} from '../hooks/useUsers';
+import {UserProfileCard} from '../components/UserProfileCard';
 
-const mockUser: User = { id: '1', name: 'Örnek Kullanıcı', email: 'user@example.com' };
+export const UserDashboard: React.FC = () => {
+    const {data: users, isLoading, error} = useUsers();
 
-// Yalnızca içerik render edilir, Layout içindeki <Sidebar> ve <Topbar> kaldırıldı.
-const UserDashboard: React.FC = () => (
-  <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-    <UserProfileCard user={mockUser} />
-  </div>
-);
+    if (isLoading) return <div>Yükleniyor…</div>;
+    if (error) return <div>Hata oluştu</div>;
 
-export default UserDashboard;
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {users!.map(user => (
+                <UserProfileCard key={user.id} user={user}/>
+            ))}
+        </div>
+    );
+};
+
+export default UserDashboard

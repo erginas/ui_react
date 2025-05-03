@@ -1,6 +1,8 @@
 // src/modules/User/types.ts
 export interface User {
-  id: string;
-  name: string;
-  email: string;
+    id: number;
+    email: string;
+    full_name: string;
+    is_active: boolean;
+    is_superuser: boolean;
 }
