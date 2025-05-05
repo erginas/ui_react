@@ -1,16 +1,13 @@
 // src/common/components/ProtectedRoute.tsx
-import React, {JSX} from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import {useAuth} from "../hooks/useAuth.tsx";
+import React from 'react';
+import {Navigate} from 'react-router-dom';
+import {useAuth} from '../hooks/useAuth';
 
-export const ProtectedRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
-  const { user } = useAuth();
-  const location = useLocation();
+export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({children}) => {
+    const {isAuthenticated, loading} = useAuth();
 
-  if (!user) {
-    // Giriş yoksa login sayfasına, geri geliş için state ile
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+    if (loading) return <div className="p-6">Yükleniyor...</div>;
+    if (!isAuthenticated) return <Navigate to="/login" replace/>;
 
-  return children;
+    return <>{children}</>;
 };

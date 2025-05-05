@@ -4,8 +4,8 @@ import {SubmitHandler, useForm} from 'react-hook-form';
 import {useMutation} from '@tanstack/react-query';
 import {AxiosError} from 'axios';
 import {useNavigate} from 'react-router-dom';
-import {apiClient} from "../../../common/api/axiosConfig.ts";
-import {Token} from "../../../common/types/token.ts";
+import {apiClient} from '../../../common/api/axiosConfig';
+import {useAuth} from '../../../common/hooks/useAuth';
 
 interface LoginForm {
     username: string;
@@ -13,20 +13,22 @@ interface LoginForm {
 }
 
 export const LoginPage: React.FC = () => {
-    const {register, handleSubmit, formState: {errors}} = useForm<LoginForm>();
     const navigate = useNavigate();
+    const {login} = useAuth();
+    const {register, handleSubmit, formState: {errors}} = useForm<LoginForm>();
 
-    const {mutate, status, error} = useMutation<Token, AxiosError, LoginForm>({
+    const {mutate, status, error} = useMutation<string, AxiosError, LoginForm>({
         mutationFn: ({username, password}) =>
-            apiClient.post<Token>('/login/access-token-json', {username, password})
-                .then(res => res.data),
-        onSuccess: ({access_token}) => {
-            localStorage.setItem('authToken', access_token);
-            navigate('/user/dashboard');
+            apiClient
+                .post('/login/access-token-json', {username, password})
+                .then(res => res.data.access_token),
+        onSuccess: (token) => {
+            login(token);
+            navigate('/user/dashboard'); // ✅ yönlendirme burada
         },
     });
 
-    const onSubmit: SubmitHandler<LoginForm> = data => mutate(data);
+    const onSubmit: SubmitHandler<LoginForm> = (data) => mutate(data);
 
     return (
         <div className="flex items-center justify-center h-screen bg-background">
@@ -38,7 +40,7 @@ export const LoginPage: React.FC = () => {
                     <input
                         type="text"
                         {...register('username', {required: 'Email zorunlu'})}
-                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring"
+                        className="w-full border rounded px-3 py-2"
                     />
                     {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>}
                 </div>
@@ -48,7 +50,7 @@ export const LoginPage: React.FC = () => {
                     <input
                         type="password"
                         {...register('password', {required: 'Şifre zorunlu'})}
-                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring"
+                        className="w-full border rounded px-3 py-2"
                     />
                     {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
                 </div>
@@ -56,14 +58,14 @@ export const LoginPage: React.FC = () => {
                 <button
                     type="submit"
                     disabled={status === 'pending'}
-                    className="w-full bg-primary text-white py-2 rounded hover:bg-primary-dark transition"
+                    className="w-full bg-primary text-white py-2 rounded hover:bg-primary-dark"
                 >
                     {status === 'pending' ? 'Giriş yapılıyor...' : 'Giriş Yap'}
                 </button>
 
                 {status === 'error' && (
                     <p className="text-red-500 text-center mt-4">
-                        {((error as AxiosError<{ detail: string }>).response?.data.detail) || 'Giriş yapılamadı'}
+                        {(error?.response?.data as any)?.detail || 'Giriş yapılamadı'}
                     </p>
                 )}
             </form>
