@@ -32,6 +32,5 @@ export interface Kisi {
     ust_beden: string
     alt_beden: string
     is_active: number
-
 }
 

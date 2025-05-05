@@ -1,37 +1,62 @@
 // src/router.tsx
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { ProtectedRoute } from './common/components/ProtectedRoute';
+import {LoginPage} from './modules/auth/pages/LoginPage';
+import {NotFound} from './common/pages/NotFound';
 
-// Layouts
-const UserLayout = lazy(() => import('../src/modules/User/UserLayout'));
-const ProductLayout = lazy(() => import('../src/modules/ex/Product/ProductLayout'));
+const UserRoutes    = lazy(() => import('./modules/User/router'));
+const ProductRoutes = lazy(() => import('./modules/ex/Product/router'));
+const KisiRoutes    = lazy(() => import('./modules/ex/Kisiler/router'));
 
-// Pages for nested routes
-const UserDashboard = lazy(() => import('../src/modules/User/pages/Dashboard'));
-const UserSettings  = lazy(() => import('../src/modules/User/pages/Settings'));
-const ProductDashboard = lazy(() => import('../src/modules/ex/Product/pages/Dashboard'));
-const ProductInventory = lazy(() => import('../src/modules/ex/Product/pages/Inventory'));
-
-export const AppRouter: React.FC = () => (
-  <BrowserRouter>
+const AppRouter: React.FC = () => (
+  // <BrowserRouter>
     <Suspense fallback={<div>Yükleniyor…</div>}>
       <Routes>
-        <Route path="/" element={<Navigate to="/user" replace />} />
+        {/* Public route */}
+        <Route path="/login" element={<LoginPage />} />
 
-        <Route path="/user" element={<UserLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<UserDashboard />} />
-          <Route path="settings" element={<UserSettings />} />
-        </Route>
+        {/* Root: korumalı, giriş yoksa login */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Navigate to="/user/dashboard" replace />
+            </ProtectedRoute>
+          }
+        />
 
-        <Route path="/product" element={<ProductLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<ProductDashboard />} />
-          <Route path="inventory" element={<ProductInventory />} />
-        </Route>
+        {/* Modül rotaları */}
+        <Route
+          path="/user/*"
+          element={
+            <ProtectedRoute>
+              <UserRoutes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/product/*"
+          element={
+            <ProtectedRoute>
+              <ProductRoutes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/kisi/*"
+          element={
+            <ProtectedRoute>
+              <KisiRoutes />
+            </ProtectedRoute>
+          }
+        />
 
-        <Route path="*" element={<Navigate to="/user" replace />} />
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
-  </BrowserRouter>
+  // </BrowserRouter>
 );
+
+export default AppRouter;

@@ -1,27 +1,29 @@
-// src/modules/User/hooks/useUsers.tsx
-import {useQuery} from '@tanstack/react-query';
-import {AxiosError} from 'axios';
-import type {Kisi} from '../types';
+// src/modules/User/hooks/useKisi.tsx
+import { useQuery } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
+import type { Kisi } from '../types';
 import {apiClient} from "../../../../common/api/axiosConfig.ts";
 
-// FastAPI yanıtını ({ data: User[]; count: number }) tipini bildiriyoruz
-interface KisiResponse {
-    data: Kisi[];
-    count: number;
-}
 
+// Fetch fonksiyonu: her koşulda dizi döndürür
 const fetchKisiler = async (): Promise<Kisi[]> => {
-    const response = await apiClient.get<KisiResponse>('/kisiler');
-    console.log("kisiler", response.data.data)
-    return response.data.data;
+  try {
+    const response = await apiClient.get('/kisiler');
+    // API doğrudan dizi döndürüyorsa:
+    return Array.isArray(response.data) ? response.data : [];
+    // Veya farklı bir property altındaysa (örneğin `items`):
+    // return response.data.items || [];
+  } catch (err) {
+    console.error('Kişi çekme hatası:', err);
+    return [];
+  }
 };
 
-export const useKisi = () => {
-    return useQuery<Kisi[], AxiosError>({
-        queryKey: ['kisiler'],
-        queryFn: fetchKisiler,
-        staleTime: 1000 * 60 * 5,
-        retry: 1,
-    });
-    console.log()
-};
+// useKisi Hook
+export const useKisi = () =>
+  useQuery<Kisi[], AxiosError>({
+    queryKey: ['kisiler'],
+    queryFn: fetchKisiler,
+    staleTime: 1000 * 60 * 5, // 5 dakika
+    retry: 1,
+  });

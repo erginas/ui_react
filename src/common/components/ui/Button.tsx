@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '@/theme';
+import {useTheme} from "../../../theme.ts";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary';
