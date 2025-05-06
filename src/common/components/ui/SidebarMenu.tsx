@@ -1,67 +1,34 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { Disclosure } from '@headlessui/react';
-import * as Icons from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
-import { useMenu } from '../../hooks/useMenu';
+// src/common/components/SidebarMenu.tsx
+import {useMemo} from 'react';
+import {useAuth} from '../../hooks/useAuth';
+import {useMenu} from '../../hooks/useMenu';
+import {SidebarSection} from './SidebarSection';
 
-export const SidebarMenu: React.FC = () => {
-  const { user } = useAuth();
-  const { data: menuItems, isLoading } = useMenu(user?.role || 'guest');
-  const location = useLocation();
+export const SidebarMenu = () => {
+    const {user} = useAuth();
+    const role = user?.role?.toLowerCase() || 'guest';
+    const {data: menuItems, isLoading, isError} = useMenu(role);
 
-  if (isLoading) return <div className="p-4 text-muted">Menü yükleniyor...</div>;
-  if (!menuItems) return <div className="p-4 text-red-500">Menü alınamadı</div>;
+    const filteredMenu = useMemo(() => {
+        if (!Array.isArray(menuItems)) return [];
 
-  // Menüleri üst-alt olarak gruplandır
-  const modules = menuItems
-    .filter(m => m.parent_id === null)
-    .map(mod => ({
-      ...mod,
-      children: menuItems.filter(child => child.parent_id === mod.id),
-    }));
+        return menuItems
+            .filter(item => item.parent_id === null)
+            .map(parent => ({
+                ...parent,
+                children: menuItems.filter(child => child.parent_id === parent.id),
+            }));
+    }, [menuItems]);
 
-  return (
-    <div className="space-y-4 p-4">
-      {modules.map(mod => {
-        const Icon = Icons[mod.icon_name as keyof typeof Icons] || Icons.Circle;
+    if (isLoading) return <div className="p-4 text-sm text-gray-500">Yükleniyor...</div>;
+    if (isError) return <div className="p-4 text-sm text-red-500">Menü yüklenemedi.</div>;
+    if (filteredMenu.length === 0) return <div className="p-4 text-sm text-gray-400">Menü bulunamadı.</div>;
 
-        return (
-          <Disclosure key={mod.id} defaultOpen={location.pathname.startsWith(mod.to_path)}>
-            {({ open }) => (
-              <div>
-                <Disclosure.Button
-                  className={`flex items-center justify-between w-full px-4 py-2 font-medium rounded-md ${
-                    open ? 'bg-primary text-white' : 'text-text hover:bg-muted'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Icon size={18} />
-                    {mod.label}
-                  </span>
-                  <Icons.ChevronUp className={`${open ? 'rotate-180' : ''} transition-transform`} />
-                </Disclosure.Button>
-
-                <Disclosure.Panel className="pl-6 pt-2 space-y-1">
-                  {mod.children.map(child => (
-                    <a
-                      key={child.id}
-                      href={child.to_path}
-                      className={`block px-2 py-1 rounded-md ${
-                        location.pathname === child.to_path
-                          ? 'bg-secondary text-white'
-                          : 'text-text hover:bg-muted'
-                      }`}
-                    >
-                      {child.label}
-                    </a>
-                  ))}
-                </Disclosure.Panel>
-              </div>
-            )}
-          </Disclosure>
-        );
-      })}
-    </div>
-  );
+    return (
+        <nav className="flex flex-col gap-2 p-4 text-sm">
+            {filteredMenu.map(mod => (
+                <SidebarSection key={mod.id} item={mod}/>
+            ))}
+        </nav>
+    );
 };

@@ -2,10 +2,10 @@
 import React from 'react';
 import {SubmitHandler, useForm} from 'react-hook-form';
 import {useMutation} from '@tanstack/react-query';
-import {AxiosError} from 'axios';
 import {useNavigate} from 'react-router-dom';
 import {apiClient} from '../../../common/api/axiosConfig';
 import {useAuth} from '../../../common/hooks/useAuth';
+import {AxiosError} from "axios";
 
 interface LoginForm {
     username: string;
@@ -21,10 +21,10 @@ export const LoginPage: React.FC = () => {
         mutationFn: ({username, password}) =>
             apiClient
                 .post('/login/access-token-json', {username, password})
-                .then(res => res.data.access_token),
+                .then(res => res.data.access_token), // 🔑 sadece token dönüyor
         onSuccess: (token) => {
-            login(token);
-            navigate('/user/dashboard'); // ✅ yönlendirme burada
+            login(token); // token'ı decode ederek kullanıcıyı belleğe al
+            navigate('/user/dashboard', {replace: true}); // yönlendir
         },
     });
 

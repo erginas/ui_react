@@ -58,14 +58,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({children}) => {
             setUser({
                 id: decoded.sub || '0',
                 name: decoded.name || 'Kullanıcı',
-                email: decoded.email || 'mail@example.com',
+                email: decoded.email || 'email@example.com',
                 role: decoded.role || 'viewer',
             });
-        } catch {
-            localStorage.removeItem('authToken');
+        } catch (error) {
+            console.error('Token decode hatası:', error);
+            setUser(null);
         }
     };
-
     const logout = () => {
         localStorage.removeItem('authToken');
         setUser(null);

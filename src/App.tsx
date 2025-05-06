@@ -1,34 +1,25 @@
-// src/App.tsx
 import React from 'react';
-import {useLocation} from 'react-router-dom';
+import ReactDOM from 'react-dom/client';
+import {RouterProvider} from 'react-router-dom';
 import {ThemeContext, tokens} from './theme';
 import {AuthProvider} from './common/hooks/useAuth';
 import {ErrorBoundary} from './common/components/ErrorBoundary';
-import AppRouter from './router';
 import {InternalError} from './common/pages/InternalError';
-import {BaseLayout} from './common/components/BaseLayout';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import router from './router';
 
-const App: React.FC = () => {
-    const location = useLocation();
-    const isLogin = location.pathname === '/login';
+const queryClient = new QueryClient();
 
-    return (
+ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
         <ThemeContext.Provider value={tokens}>
-            <AuthProvider>
-                {isLogin ? (
+            <QueryClientProvider client={queryClient}>
+                <AuthProvider>
                     <ErrorBoundary fallback={<InternalError/>}>
-                        <AppRouter/>
+                        <RouterProvider router={router}/>
                     </ErrorBoundary>
-                ) : (
-                    <BaseLayout withFooter>
-                        <ErrorBoundary fallback={<InternalError/>}>
-                            <AppRouter/>
-                        </ErrorBoundary>
-                    </BaseLayout>
-                )}
-            </AuthProvider>
+                </AuthProvider>
+            </QueryClientProvider>
         </ThemeContext.Provider>
-    );
-};
-
-export default App;
+    </React.StrictMode>
+);

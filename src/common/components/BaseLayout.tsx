@@ -1,66 +1,54 @@
 // src/common/components/BaseLayout.tsx
-import React, {ReactNode, useState} from 'react';
-import {useLocation} from 'react-router-dom';
+import React from 'react';
+import {useSidebar} from '../../context/SidebarContext';
 import {Menu as MenuIcon, X as CloseIcon} from 'lucide-react';
-import {SidebarMenu} from './ui/SidebarMenu';
-import {Footer} from './ui/Footer';
-import {useTheme} from '../../theme';
-import {UserDropdown} from './ui/UserDropdown';
+import {UserDropdown} from "./ui/UserDropdown.tsx";
+import {SidebarMenu} from "./ui/SidebarMenu.tsx";
+import {Footer} from "./ui/Footer.tsx";
 
 interface BaseLayoutProps {
-    children: ReactNode;
+    children: React.ReactNode;
     withFooter?: boolean;
     customTitle?: string;
 }
 
-export const BaseLayout: React.FC<BaseLayoutProps> = ({children, withFooter = true, customTitle}) => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
-    const {colors} = useTheme();
-    const {pathname} = useLocation();
-
-    // route'a göre başlık
-    const section = pathname.split('/')[1] || '';
-    const titles: Record<string, string> = {
-        user: 'Kullanıcı Yönetimi',
-        product: 'Ürün Yönetimi',
-        kisi: 'Kişi Yönetimi',
-    };
-    const title = customTitle || titles[section] || 'Ana Sayfa';
+export const BaseLayout: React.FC<BaseLayoutProps> = ({
+                                                          children,
+                                                          withFooter = true,
+                                                          customTitle,
+                                                      }) => {
+    const {isOpen, toggle} = useSidebar();
+    const title = customTitle ?? 'MGP Uygulaması';
 
     return (
         <div className="flex flex-col min-h-screen">
             {/* Topbar */}
             <header
-                className="fixed top-0 left-0 right-0 z-50 h-16 bg-white border-b flex items-center justify-between px-6">
-                {/* Sol: Menü butonu ve başlık */}
+                className="fixed top-0 left-0 right-0 z-50 h-16 bg-white dark:bg-gray-900 border-b flex items-center justify-between px-6 shadow-sm">
                 <div className="flex items-center gap-3">
-                    <button onClick={() => setSidebarOpen(o => !o)} className="p-1 rounded hover:bg-gray-100">
-                        {sidebarOpen ? <CloseIcon size={20}/> : <MenuIcon size={20}/>}
+                    <button onClick={toggle} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                        {isOpen ? <CloseIcon size={20}/> : <MenuIcon size={20}/>}
                     </button>
-                    <h1 className="text-xl font-semibold">{title}</h1>
+                    <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{title}</h1>
                 </div>
 
-                {/* Sağ: Kullanıcı menüsü */}
                 <div className="flex items-center gap-3">
                     <UserDropdown/>
                 </div>
             </header>
 
-            {/* Sidebar + İçerik */}
             <div className="flex flex-1 mt-16 overflow-hidden">
                 {/* Sidebar */}
                 <aside
-                    className={`bg-white border-r transition-all duration-300 ease-in-out ${sidebarOpen ? 'w-64' : 'w-0'} overflow-auto`}
-                    style={{backgroundColor: colors.surface}}
+                    className={`bg-white dark:bg-gray-900 shadow-md border-r transition-all duration-300 ease-in-out 
+          ${isOpen ? 'w-64' : 'w-0'} overflow-hidden rounded-r-2xl`}
                 >
-                    {sidebarOpen && <SidebarMenu/>}
+                    {isOpen && <SidebarMenu/>}
                 </aside>
 
-                {/* Ana içerik */}
-                <div className="flex flex-col flex-1 overflow-auto">
-                    <main className="flex-1 p-6" style={{backgroundColor: colors.background}}>
-                        {children}
-                    </main>
+                {/* Main content */}
+                <div className="flex flex-col flex-1 overflow-auto bg-gray-50 dark:bg-gray-800">
+                    <main className="flex-1 p-4">{children}</main>
                     {withFooter && <Footer/>}
                 </div>
             </div>
