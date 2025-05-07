@@ -6,6 +6,7 @@ import {ProtectedRoute} from './common/components/ProtectedRoute';
 import UserRoutes from "./modules/User/router.tsx";
 import ProductRoutes from "./modules/ex/Product/router.tsx";
 import KisiRoutes from "./modules/ex/Kisiler/router.tsx";
+import PersonelRoutes from "./modules/ex/Personel/router.tsx";
 import {LoginPage} from "./modules/auth/pages/LoginPage.tsx";
 
 export const router = createBrowserRouter([
@@ -38,6 +39,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={['admin']}>
                         <KisiRoutes/>
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: 'personel/*',
+                element: (
+                    <ProtectedRoute allowedRoles={['admin']}>
+                        <PersonelRoutes/>
                     </ProtectedRoute>
                 ),
             },
