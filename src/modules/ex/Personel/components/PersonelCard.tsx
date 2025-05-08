@@ -1,4 +1,4 @@
-import { Personel } from "../types";
+import { Personel } from "../types/types.ts";
 
 export default function PersonelCard({ personel }: { personel: Personel }) {
   return (

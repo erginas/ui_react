@@ -1,4 +1,4 @@
-import {Personel} from "../types";
+import {Personel} from "../types/types.ts";
 import {useQuery} from '@tanstack/react-query';
 import type {AxiosError} from 'axios';
 import {apiClient} from "../../../../common/api/axiosConfig.ts";
