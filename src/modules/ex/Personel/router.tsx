@@ -21,6 +21,7 @@
 import React, {lazy, Suspense} from 'react';
 import {Navigate, Route, Routes} from 'react-router-dom';
 import AktifPersonelList from "./pages/AktifPersonelList.tsx";
+import PersonelDetail from "./pages/PersonelDetail.tsx";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 
@@ -29,7 +30,8 @@ const PersonelRoutes: React.FC = () => (
         <Routes>
             <Route index element={<Navigate to="dashboard" replace/>}/>
             <Route path="dashboard" element={<Dashboard/>}/>
-            <Route path="aktif" element={<AktifPersonelList />} />
+            <Route path="aktif" element={<AktifPersonelList/>}/>
+            <Route path=":id" element={<PersonelDetail/>}/>
         </Routes>
     </Suspense>
 );
