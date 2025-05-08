@@ -20,6 +20,7 @@
 // src/modules/Kisiler/router.tsx
 import React, {lazy, Suspense} from 'react';
 import {Navigate, Route, Routes} from 'react-router-dom';
+import AktifPersonelList from "./pages/AktifPersonelList.tsx";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 
@@ -28,6 +29,7 @@ const PersonelRoutes: React.FC = () => (
         <Routes>
             <Route index element={<Navigate to="dashboard" replace/>}/>
             <Route path="dashboard" element={<Dashboard/>}/>
+            <Route path="aktif" element={<AktifPersonelList />} />
         </Routes>
     </Suspense>
 );
