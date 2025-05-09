@@ -6,7 +6,7 @@ import {AuthProvider} from './common/hooks/useAuth';
 import {ErrorBoundary} from './common/components/ErrorBoundary';
 import {InternalError} from './common/pages/InternalError';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import router from './router';
+import {router} from './router';
 
 const queryClient = new QueryClient();
 

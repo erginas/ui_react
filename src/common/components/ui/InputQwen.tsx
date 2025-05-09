@@ -1,27 +1,33 @@
 // src/common/components/ui/Input.tsx
 
-interface InputProps {
-    label: string;
+import React from 'react';
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    label?: string;
     error?: string;
-    register: any; // react-hook-form register fonksiyonu
-    name: string;
-    type?: string;
+    register?: Function; // react-hook-form register fonksiyonu
+    name?: string;
     readOnly?: boolean;
 }
 
-export function Input({ label, error, register, name, type = "text", readOnly = false }: InputProps) {
+export const Input: React.FC<InputProps> = ({label, error, register, name, readOnly = false, ...props}) => {
+    const inputProps = register ? register(name) : {};
+
     return (
-        <div className="space-y-1">
-            <label className="block text-sm font-medium">{label}</label>
+        <div className="space-y-1 w-full">
+            {label && (
+                <label htmlFor={name} className="block text-sm font-medium text-gray-700">{label}</label>
+            )}
             <input
-                {...register(name)}
-                type={type}
+                id={name}
+                {...inputProps}
+                {...props}
                 readOnly={readOnly}
                 className={`w-full border rounded px-3 py-1 ${
                     error ? 'border-red-500' : 'border-gray-300'
-                } ${readOnly ? 'bg-gray-100' : ''}`}
+                } ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
             />
             {error && <p className="text-xs text-red-500">{error}</p>}
         </div>
     );
-}
+};
